@@ -50,12 +50,12 @@ body {
     word-break: break-all;
 }
 
-.output .row-1 {
+.output .row1 {
     color: rgba(255, 255, 255, .75);
     font-size: 1.5rem;
 }
 
-.output .row-2 {
+.output .row2 {
     color: #ffffff;
     font-size: 1.5rem;
 }
