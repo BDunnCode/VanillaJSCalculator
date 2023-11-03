@@ -12,25 +12,80 @@ class Calculator {
     }
 
     delete() {
-
+        this.outputRow2 = this.outputRow2.toString().slice(0, -1)
     }
 
     appendNumber(number) {
-        this.outputRow2 = number
+        if (number === '.' && this.outputRow2.includes('.')) return
+        this.outputRow2 = this.outputRow2.toString() + number.toString()
     }
 
     chooseOperation(operation) {
-
+        if (this.currentOperand === '') return
+        if (this.previousOperand !== '') {
+            this.compute()
+        }
+        this.operation = operation
+        this.outputRow1 = this.outputRow2
+        this.outputRow2 = ''
     }
 
-    compute(outputRow1TextElement, outputRow2TextElement, operation) {
-
+    compute() {
+        let computation
+        const prev = parseFloat(this.outputRow2)
+        const current = parseFloat(this.outputRow1)
+        if (isNaN(prev) || isNaN(current)) return
+        switch (this.operation) {
+            case '+':
+                computation = prev + current
+                break
+            case '-':
+                computation = prev - current
+                break
+            case '*':
+                computation = prev * current
+                break
+             case '÷':
+                computation = current / prev
+                break
+            default:
+                return
+        }
+        this.outputRow2 = computation
+        this.operation = undefined
+        this.outputRow1 = ''
     }
+
+    getDisplayNumber(number) {
+        const stringNumber = number.toString()
+        const integerDigits = parseFloat(stringNumber.split('.')[0])
+        const decimalDigits = stringNumber.split('.')[1]
+        let integerDisplay
+        if (isNaN(integerDigits)) {
+            integerDisplay = ''
+        } else { 
+            integerDisplay = integerDigits.toLocaleString('en', {
+                maximumFractionDigits: 0 })
+        }
+        if (decimalDigits != null) {
+            return `${integerDisplay}.${decimalDigits}`
+        } else {
+            return integerDisplay
+        }
+    }   
+
+
+
 
     updateDisplay() {
-        this.outputRow2TextElement.innerText = this.outputRow2
+        this.outputRow2TextElement.innerText = this.getDisplayNumber(this.outputRow2)
+        if (this.operation != null) {
+            this.outputRow1TextElement.innerText = 
+                `${this.getDisplayNumber(this.outputRow1)} ${this.operation}`
+        } else {
+            this.outputRow1TextElement.innerText = ''
+        }
     }
-
 }
 
 
@@ -50,4 +105,26 @@ numberButtons.forEach(button => {
         calculator.appendNumber(button.innerText)
         calculator.updateDisplay()
     })
+})
+
+operationButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        calculator.chooseOperation(button.innerText)
+        calculator.updateDisplay()
+    })
+})
+
+equalsButton.addEventListener('click', button => {
+    calculator.compute()
+    calculator.updateDisplay()
+})
+
+allClearButton.addEventListener('click', button => {
+    calculator.clear()
+    calculator.updateDisplay()
+})
+
+deleteButton.addEventListener('click', button => {
+    calculator.delete()
+    calculator.updateDisplay()
 })
